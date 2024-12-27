@@ -61,7 +61,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
         customerId: localStorage.getItem('userId'),
         branchName: getBranchName(selectedBranchName),
         reservationDate: `${selectedDate}T${selectedTime}:00`,
-        bankerName: localStorage.getItem('userNickname'),
+        bankerName: localStorage.getItem('문보경'),
       };
 
       try {
@@ -152,7 +152,6 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
                 onSelect={onDateSelect}
                 onPanelChange={onPanelChange}
                 disabledDate={(current) => current.isBefore(dayjs().startOf('day'), 'day')}
-
               />
             </div>
           </div>

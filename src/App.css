@@ -23,6 +23,7 @@
 .scroll-container {
   overflow-y: scroll; /* 세로 스크롤 활성화 */
   max-height: 100vh;
+  margin-right:5px;
 }
 
 .scroll-container::-webkit-scrollbar {
