@@ -35,7 +35,7 @@ const Community: React.FC = () => {
       }
     };
     fetchPosts();
-  }, []);
+  }, [navigate]);
 
   const handlePostClick = useCallback(
     (postId: number) => {

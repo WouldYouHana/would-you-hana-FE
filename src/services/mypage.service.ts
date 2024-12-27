@@ -16,7 +16,7 @@ export const myPageService = {
 
   // 스크랩한 qna 게시물 목록 조회
   getScrapedQnas: (customerId: number) => {
-    return request<ScrapQuestionDTO>({
+    return request<ScrapQuestionDTO[]>({
       method: 'GET',
       url: `${BASE_URL}/my/qna/scrapList/${customerId}`
     });
@@ -24,14 +24,14 @@ export const myPageService = {
 
   //좋아요한 게시물 목록 조회
   getLikedPosts: (customerId: number) => {
-    return request<LikesScrapDTO>({
+    return request<LikesScrapDTO[]>({
         method: 'GET',
         url: `${BASE_URL}/my/post/likeList/${customerId}`
     });
   },
   //질문 등록
   getRegisteredQuestions : (customerId: number) => {
-    return request<LikesScrapDTO>({
+    return request<LikesScrapDTO[]>({
       method: 'GET',
       url: `${BASE_URL}/my/questions/${customerId}`
     })

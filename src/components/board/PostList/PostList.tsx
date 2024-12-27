@@ -3,10 +3,10 @@ import { Pagination } from 'antd';
 import iconUser from '../../../assets/img/icon_user_board.jpg';
 import { relativeTime } from '../../../utils/stringFormat';
 import { QnaListDTO } from '../../../types/dto/question.dto';
-import { ScrapPostDTO } from '../../../types/dto/likesscrap.dto';
+import { ScrapPostDTO, ScrapQuestionDTO } from '../../../types/dto/likesscrap.dto';
 
 interface PostListProps {
-  posts: (QnaListDTO | ScrapPostDTO)[];
+  posts: (QnaListDTO | ScrapPostDTO | ScrapQuestionDTO)[];
   currentPage: number;
   postsPerPage: number;
   totalPosts: number;
@@ -15,7 +15,10 @@ interface PostListProps {
 }
 
 // 타입 가드 함수
-const isQnaListDTO = (post: QnaListDTO | ScrapPostDTO): post is QnaListDTO => {
+const isScrapPostDTO = (post: QnaListDTO | ScrapPostDTO | ScrapQuestionDTO): post is ScrapPostDTO => {
+  return (post as ScrapPostDTO).postId !== undefined; // QnaListDTO에만 존재하는 속성으로 확인
+};
+const isQnaListDTO = (post: QnaListDTO | ScrapPostDTO | ScrapQuestionDTO): post is QnaListDTO => {
   return (post as QnaListDTO).answerBanker !== undefined; // QnaListDTO에만 존재하는 속성으로 확인
 };
 
@@ -34,7 +37,7 @@ const PostList: React.FC<PostListProps> = ({
           <li
             key={index}
             className="py-5 cursor-pointer hover:bg-gray-50 transition-colors"
-            onClick={() => onPostClick(isQnaListDTO(post)?post.questionId:post.postId)}
+            onClick={() => onPostClick(isScrapPostDTO(post)?post.postId:post.questionId)}
           >
             <div className="text-start">
               {/* 카테고리 */}

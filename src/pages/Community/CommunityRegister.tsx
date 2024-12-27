@@ -2,9 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Select, message, Input, Button } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
-// import { findUser } from '../../utils/userStorage';
-import { communityPostCount, saveCommunityPost } from '../../utils/communityPostStorage';
-// import { getUserEmail } from '../../hoc/request';
 import { CommunityCategories } from '../../constants/posts';
 import ImageUpload from '../../components/board/QuestionForm/ImageUpload';
 import { communityService } from '../../services/community.service';
@@ -94,7 +91,7 @@ const CommunityRegister: React.FC = () => {
 
       const question: CommunityRegisterDTO = {
         title,
-        customerId: userId,
+        customerId: Number(userId),
         categoryName,
         location: userLocation || '성동구',
         content
