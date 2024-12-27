@@ -164,7 +164,7 @@ const getBranchDetails = (branchName: string) => {
                     </div>
                     <div className='flex gap-2' style={{ fontSize: '16px' }}>
                       <img src={iconHome} width={'17px'} />
-                      {reservation.bankerName}
+                      {reservation.bankerName? reservation.bankerName : '행원 미지정'}
                     </div>
                     <button
                       style={{

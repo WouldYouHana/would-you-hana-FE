@@ -24,6 +24,7 @@ interface ReservationModalProps {
   onOk: () => void;
   onCancel: () => void;
   selectedBranchName: string | null;
+  selectedBankerName: string | null;
 }
 
 const ReservationModal: React.FC<ReservationModalProps> = ({
@@ -31,6 +32,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
   onOk,
   onCancel,
   selectedBranchName,
+  selectedBankerName
 }) => {
   const currentDateTime = dayjs();
 
@@ -61,7 +63,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
         customerId: localStorage.getItem('userId'),
         branchName: getBranchName(selectedBranchName),
         reservationDate: `${selectedDate}T${selectedTime}:00`,
-        bankerName: localStorage.getItem('문보경'),
+        bankerName: selectedBankerName,
       };
 
       try {
@@ -152,6 +154,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
                 onSelect={onDateSelect}
                 onPanelChange={onPanelChange}
                 disabledDate={(current) => current.isBefore(dayjs().startOf('day'), 'day')}
+
               />
             </div>
           </div>

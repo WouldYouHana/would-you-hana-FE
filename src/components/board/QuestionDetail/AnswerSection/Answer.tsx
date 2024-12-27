@@ -45,10 +45,6 @@ const Answer: React.FC<AnswerProps> = ({ answer }) => {
     navigate(`/bankerProfile/${answer.bankerId}`);
   };
 
-  const handleReserveBtn = () => {
-    navigate('/findbank');
-  };
-
   const handleShareClick = () => {
     navigator.clipboard.writeText(`${window.location.origin}/qna/${answer.questionId}`);
     message.success("링크가 복사되었습니다.");
@@ -113,7 +109,7 @@ const Answer: React.FC<AnswerProps> = ({ answer }) => {
           </div>
         </div>
 
-        <ReservationModal isOpen={isModalOpen} onOk={handleOk} onCancel={handleCancel} selectedBranchName={'성수역지점'} />
+        <ReservationModal isOpen={isModalOpen} onOk={handleOk} onCancel={handleCancel} selectedBranchName={bankerInfo?.branchName || '지점정보없음'} selectedBankerName={bankerInfo?.name}/>
       </div>
     </>
   );
