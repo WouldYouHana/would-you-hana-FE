@@ -34,7 +34,6 @@ const Community: React.FC = () => {
         setLoading(false);
       }
     };
-
     fetchPosts();
   }, []);
 

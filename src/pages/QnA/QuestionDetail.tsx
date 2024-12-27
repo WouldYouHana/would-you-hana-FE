@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, message } from 'antd';
-import { StarOutlined, StarFilled, FormOutlined, DeleteOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons';
+import { StarOutlined, StarFilled, FormOutlined, DeleteOutlined, MessageOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../hoc/store';
 import {QuestionResponseDTO} from '../../types/dto/question.dto';
@@ -36,15 +36,9 @@ const QuestionDetail: React.FC = () => {
       }
 
       try {
-        const response = await qnaService.getQuestionDetail(parseInt(postId));
+        const response = await qnaService.getQuestionDetail(Number(postId));
         setQuestion(response.data);
-        // 내가 작성한 글인지 여부를 확인
-        console.log(response.data)
-        if (response.data.customerId === userId) {
-          setIsMyQna(true); // 내가 작성한 글인 경우 true
-        } else {
-          setIsMyQna(false); // 내가 작성한 글이 아니면 false
-        }
+        setIsMyQna(response.data.customerId === userId); // 내가 작성한 글인 경우 true
       } catch (error) {
         console.error('Failed to fetch question:', error);
         message.error('게시글을 불러오는데 실패했습니다.');
@@ -52,12 +46,18 @@ const QuestionDetail: React.FC = () => {
       }
     };
 
-    fetchQuestion();
-  }, [postId, navigate, userId]);
+    const fetchIsScraped = async () =>{
+      try{
+        const response = await likesscrapService.getIsQuestionScrapChecked(Number(userId), Number(postId));
+        setIsScraped(response.data);
+      }catch(error){
+        console.error('Failed to fetch scrap info:', error);
+      }
+    }
 
-  // 스크랩 여부 조회
-  // useEffect(() => {
-  // }, [userId]);
+    fetchQuestion();
+    fetchIsScraped();
+  }, [postId, navigate, userId]);
 
   // 답변 제출
   const handleAnswerSubmit = useCallback(async (content: string) => {

@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { getPosts } from '../../utils/postStorage';
-import { Post } from '../../types/post';
 import PostList from '../../components/board/PostList/PostList';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { myPageService } from '../../services/mypage.service';
+import { ScrapPostDTO } from '../../types/dto/likesscrap.dto';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../hoc/store';
-import { myPageService } from '../../services/mypage.service';
+
 
 const CommunityScraps: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const {userId} = useSelector((state: RootState) => state.auth);
+
+  const [posts, setPosts] = useState<ScrapPostDTO[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   const postsPerPage = 5;
@@ -17,22 +18,19 @@ const CommunityScraps: React.FC = () => {
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
   
-  const isLoggedIn = useSelector((state: RootState) => state.auth.isAuthenticated);
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
   const handlePostClick = (postId: number) => {
-    console.log("----------------", postId);
+    console.log("@@@")
     navigate(`/community/detail/${postId}`); // 특정 포스트 ID로 페이지 이동
   };
 
   useEffect(() => {
     const fetchScraps = async() => {
       try{
-        const customerId = Number(localStorage.getItem('userId'));
-        const response = await myPageService.getScrapedPosts(customerId);
+        const response = await myPageService.getScrapedPosts(Number(userId));
         setPosts(response.data);
       }catch(error){
         console.error('failed to fetch scraps:', error);
