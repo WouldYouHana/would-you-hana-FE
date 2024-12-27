@@ -44,7 +44,14 @@ const UserReservation: React.FC = () => {
       try {
         const customerId = localStorage.getItem('userId');
         const response = await reservationService.getReservations(customerId);
-        setReservations(response.data); // API로부터 받은 예약 내역을 상태에 설정
+
+        // 예약 데이터를 rdayTime 기준으로 내림차순 정렬
+      const sortedReservations = response.data.sort(
+        (a, b) => new Date(b.rdayTime).getTime() - new Date(a.rdayTime).getTime()
+      );
+
+      setReservations(sortedReservations); // 정렬된 데이터를 상태에 설정
+        // setReservations(response.data); // API로부터 받은 예약 내역을 상태에 설정
       } catch (error) {
         console.error('Error fetching reservations:', error);
       }
@@ -88,104 +95,115 @@ const getBranchDetails = (branchName: string) => {
               justifyItems: 'center',
             }}
           >
-            {reservations.map((reservation) => (
-              <div
-                key={reservation.branchName}
-                style={{
-                  border: '1px solid #7E8082',
-                  borderRadius: '10px',
-                  padding: '15px',
-                  marginBottom: '15px',
-                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-                  width: '90%',
-                  marginRight: '10px',
-                }}
-              >
-                <div>
-                  <p
-                    style={{
-                      fontWeight: 'bolder',
-                      color: '#FC4C4E',
-                      marginBottom: '3px',
-                      fontSize: '15px',
-                    }}
-                  >
-                    {reservation.rdayTime.substring(2, 4)}.{reservation.rdayTime.substring(5, 7)}.{reservation.rdayTime.substring(8, 10)}
-                  </p>
-                </div>
-                <div className='flex ml-4'>
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                    className='mt-2'
-                  >
-                    <div
-                      style={{
-                        backgroundColor: '#E9F2FF',
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '10px',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <img src={iconHana} width={'17px'} />
-                    </div>
-                    <div
-                      style={{
-                        borderLeft: '3px solid #D9D9D9',
-                        height: '90%',
-                        margin: '5px',
-                      }}
-                    />
-                  </div>
-                  <div className='flex flex-col ml-4 mt-1 text-[#555558] gap-2'>
-                    <div className='text-black'>
-                      <strong>{reservation.branchName}</strong>
-                    </div>
-                    <div
-                      className='flex gap-2 align-center text-center'
-                      style={{ fontSize: '16px' }}
-                    >
-                      <img src={iconClock} width={'17px'} />
-                      {reservation.rdayTime.substring(11, 16)} 예약
-                      <p
-                        className='text-gray-400 font-normal flex justify-center items-center'
-                        style={{ fontSize: '14px' }}
-                      >
-                        {' '}
-                        · 1번째 방문
-                      </p>
-                    </div>
-                    <div className='flex gap-2' style={{ fontSize: '16px' }}>
-                      <img src={iconHome} width={'17px'} />
-                      {reservation.bankerName? reservation.bankerName : '행원 미지정'}
-                    </div>
-                    <button
-                      style={{
-                        borderWidth: '1px',
-                        borderColor: '#008485',
-                        borderRadius: '50px',
-                        color: '#008485',
-                        fontWeight: 'bold',
-                        fontSize: '14px',
-                        marginTop: '10px',
-                        width: '100px',
-                      }}
-                      className='px-4 py-3'
-                      onClick={() => handleBranchSelect(reservation.branchName)}
-                    >
-                      지점 정보
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+            {reservations.map((reservation) => {
+  const isPast = new Date(reservation.rdayTime) < new Date();
+  return (
+    <div
+      key={reservation.branchName}
+      style={{
+        border: '1px solid #7E8082',
+        borderRadius: '10px',
+        padding: '15px',
+        marginBottom: '15px',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+        width: '90%',
+        marginRight: '10px',
+        backgroundColor: isPast ? '#F0F0F0' : 'white',
+        opacity: isPast ? 0.5 : 1,
+        pointerEvents: isPast ? 'none' : 'auto',
+      }}
+    >
+      <div>
+        <p
+          style={{
+            fontWeight: 'bolder',
+            color: isPast ? '#B0B0B0' : '#FC4C4E',
+            marginBottom: '3px',
+            fontSize: '15px',
+          }}
+        >
+          {reservation.rdayTime.substring(2, 4)}.{reservation.rdayTime.substring(5, 7)}.{reservation.rdayTime.substring(8, 10)}
+        </p>
+      </div>
+      <div className='flex ml-4'>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          className='mt-2'
+        >
+          <div
+            style={{
+              backgroundColor: '#E9F2FF',
+              width: '32px',
+              height: '32px',
+              borderRadius: '10px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <img src={iconHana} width={'17px'} />
+          </div>
+          <div
+            style={{
+              borderLeft: '3px solid #D9D9D9',
+              height: '90%',
+              margin: '5px',
+            }}
+          />
+        </div>
+        <div className='flex flex-col ml-4 mt-1 text-[#555558] gap-2'>
+          <div className='text-black'>
+            <strong>{reservation.branchName}</strong>
+          </div>
+          <div
+            className='flex gap-2 align-center text-center'
+            style={{ fontSize: '16px', color: isPast ? '#A0A0A0' : '#555558' }}
+          >
+            <img src={iconClock} width={'17px'} />
+            {reservation.rdayTime.substring(11, 16)} 예약
+            <p
+              className='text-gray-400 font-normal flex justify-center items-center'
+              style={{ fontSize: '14px' }}
+            >
+              {' '}
+              · 1번째 방문
+            </p>
+          </div>
+          <div
+            className='flex gap-2'
+            style={{ fontSize: '16px', color: isPast ? '#A0A0A0' : '#555558' }}
+          >
+            <img src={iconHome} width={'17px'} />
+            {reservation.bankerName ? reservation.bankerName : '행원 미지정'}
+          </div>
+          <button
+            style={{
+              borderWidth: '1px',
+              borderColor: isPast ? '#C0C0C0' : '#008485',
+              borderRadius: '50px',
+              color: isPast ? '#C0C0C0' : '#008485',
+              fontWeight: 'bold',
+              fontSize: '14px',
+              marginTop: '10px',
+              width: '100px',
+              pointerEvents: isPast ? 'none' : 'auto',
+            }}
+            className='px-4 py-3'
+            onClick={() => handleBranchSelect(reservation.branchName)}
+            disabled={isPast}
+          >
+            지점 정보
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+})}
           </div>
         </div>
       </div>
