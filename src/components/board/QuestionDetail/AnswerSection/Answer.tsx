@@ -10,6 +10,7 @@ import { BankerMyPageReturnDTO } from '../../../../types/dto/banker.dto';
 import { qnaService } from '../../../../services/qna.service';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../hoc/store';
+import ReservationModal from '../../../ReservationModal';
 
 interface AnswerProps {
   answer: AnswerResponseDTO;
@@ -21,6 +22,8 @@ const Answer: React.FC<AnswerProps> = ({ answer }) => {
   const [bankerInfo, setBankerInfo] = useState<BankerMyPageReturnDTO | null>(null);
   const [isGood, setIsGood] = useState<boolean>(false);
   const { userId } = useSelector((state: RootState) => state.auth);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   useEffect(() => {
     const fetchBankerInfo = async () => {
@@ -42,14 +45,22 @@ const Answer: React.FC<AnswerProps> = ({ answer }) => {
     navigate(`/bankerProfile/${answer.bankerId}`);
   };
 
-  const handleReserveBtn = () => {
-    navigate('/findbank');
-  };
-
   const handleShareClick = () => {
     navigator.clipboard.writeText(`${window.location.origin}/qna/${answer.questionId}`);
     message.success("링크가 복사되었습니다.");
-  }
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <>
@@ -80,7 +91,8 @@ const Answer: React.FC<AnswerProps> = ({ answer }) => {
               <Tooltip title='상담 예약하기' color='white'>
                 <Button
                   icon={<CalendarOutlined />}
-                  onClick={handleReserveBtn}
+                  onClick={showModal}
+                  // onClick={handleReserveBtn}
                 />
               </Tooltip>
             </div>
@@ -96,6 +108,8 @@ const Answer: React.FC<AnswerProps> = ({ answer }) => {
             </div>
           </div>
         </div>
+
+        <ReservationModal isOpen={isModalOpen} onOk={handleOk} onCancel={handleCancel} selectedBranchName={bankerInfo?.branchName || '지점정보없음'} selectedBankerName={bankerInfo?.name}/>
       </div>
     </>
   );

@@ -9,49 +9,6 @@ import { ReservationResponseDTO } from '../../types/dto/reservation.dto';
 import { reservationService } from '../../services/reservation.service';
 import dayjs from 'dayjs';
 
-// const reservations = [
-//   {
-//     id: 1,
-//     date: '2024-12-25',
-//     time: '10:00 AM',
-//     branch: '성수점',
-//     userName: '김고객',
-//     banker: '김하나 대리',
-//   },
-//   {
-//     id: 2,
-//     date: '2024-12-26',
-//     time: '2:00 PM',
-//     branch: '성수점',
-//     userName: '김해원',
-//     banker: '고은행 과장',
-//   },
-//   {
-//     id: 3,
-//     date: '2024-12-27',
-//     time: '4:00 PM',
-//     branch: '성수점',
-//     userName: '정연채',
-//     banker: '홍창기 대리',
-//   },
-//   {
-//     id: 3,
-//     date: '2024-12-27',
-//     time: '4:00 PM',
-//     branch: '성수점',
-//     userName: '김채운',
-//     banker: '홍창기 대리',
-//   },
-//   {
-//     id: 3,
-//     date: '2024-12-27',
-//     time: '4:00 PM',
-//     branch: '성수점',
-//     userName: '김상현',
-//     banker: '고은행 과장',
-//   },
-// ];
-
 const BankerReservation: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [reservations, setReservations] = useState<ReservationResponseDTO[]>([]);
@@ -111,7 +68,7 @@ const BankerReservation: React.FC = () => {
   return (
     <div className="flex">
       {/* 캘린더 */}
-      <div style={{ width: '50%', height: '60%', padding: '20px' }}>
+      <div style={{ maxWidth:'700px', minWidth:'700px' }}>
         <Calendar
           onSelect={handleDateSelect}
           cellRender={cellRender}
@@ -199,8 +156,7 @@ const BankerReservation: React.FC = () => {
                   </div>
                   <div className="flex flex-col ml-4 mt-1 text-[#555558] gap-2">
                     <div className="text-black">
-                      {/* <strong>{reservation.userName}</strong> */}
-                      <strong>김고객</strong>
+                      <strong>{reservation.customerName}</strong>
                     </div>
                     <div
                       className="flex gap-2 align-center text-center"
@@ -218,7 +174,8 @@ const BankerReservation: React.FC = () => {
                     </div>
                     <div className="flex gap-2" style={{ fontSize: '16px' }}>
                       <img src={iconHome} width={'17px'} />
-                      {reservation.bankerName}
+                      {reservation.bankerName? 
+                      reservation.bankerName: '행원 미지정'}
                     </div>
                   </div>
                 </div>

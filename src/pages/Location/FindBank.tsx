@@ -32,7 +32,6 @@ const FindBank = () => {
   const showModal = () => {
     setIsModalOpen(true);
     setSelectedBranchName(selectedLocation.title);
-    console.log('---------------selected', selectedLocation.title);
   };
 
   const handleOk = () => {
@@ -352,7 +351,7 @@ const FindBank = () => {
     </div>
 
     {/* Scrollable Content */}
-    <div className="flex-1 p-6 overflow-y-auto bg-gradient-to-b from-gray-50 to-gray-100">
+    <div className="scroll-container flex-1 p-6 overflow-y-auto bg-gradient-to-b from-gray-50 to-gray-100">
       {selectedLocation ? (
         <>
           {selectedLocation.image && (
