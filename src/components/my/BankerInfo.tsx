@@ -29,16 +29,28 @@ const BankerInfo: React.FC = () => {
 
   useEffect(() => {
     const fetchBankerInfo = async () => {
-      const response = await myPageService.getBankerMyPage(Number(userId));
-      let {name, specializations, content, filePath} = response.data
-      if(!filePath){
-        filePath=bankerImg;
+      try {
+        const response = await myPageService.getBankerMyPage(Number(userId));
+        const { name, specializations, content, filePath } = response.data;
+        setSavedProfile({
+          bankerId: Number(userId),
+          name,
+          specializations,
+          content,
+          filePath: filePath || bankerImg,
+        });
+      } catch (error) {
+        console.error('Failed to fetch banker info:', error);
+        message.error('프로필 정보를 불러오는데 실패했습니다.');
       }
-      setSavedProfile({bankerId:Number(userId), name, specializations,content,filePath});
-   
-    }
+    };
+
     fetchBankerInfo();
   }, [userId]);
+
+  useEffect(() => {
+    setEditableProfile(savedProfile);
+  }, [savedProfile]);
 
   // 태그 추가
   const addTag = () => {
