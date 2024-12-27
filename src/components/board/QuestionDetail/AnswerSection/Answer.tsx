@@ -39,7 +39,7 @@ const Answer: React.FC<AnswerProps> = ({ answer }) => {
   }
 
   const handleProfileBtn = () => {
-    navigate('/bankerProfile');
+    navigate(`/bankerProfile/${answer.bankerId}`);
   };
 
   const handleReserveBtn = () => {
