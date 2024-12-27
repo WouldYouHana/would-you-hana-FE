@@ -1,27 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Button, Input, Upload } from 'antd';
+import { Layout, Button, Input, Upload, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../hoc/store';
 import type { UploadProps } from 'antd/es/upload';
-import { BankerMyPageReturnDTO } from '../../types/dto/banker.dto';
+import { BankerProfileModifyDTO } from '../../types/dto/banker.dto';
 import { myPageService } from '../../services/mypage.service';
 import bankerImg from '../../assets/img/banker1.png';
+import { bankerMypageService } from '../../services/bankerMypage.service';
 
 const { Content } = Layout;
 
-
 const BankerInfo: React.FC = () => {
   const { userId } = useSelector((state: RootState) => state.auth);
-  const [savedProfile, setSavedProfile] = useState<BankerMyPageReturnDTO>({
+  const [savedProfile, setSavedProfile] = useState<BankerProfileModifyDTO>({
     name:'김하나',
-    branchName:'성동지점',
+    bankerId:Number(userId),
     specializations:['이체'],
     content:'안녕하세요.',
-    filePath:bankerImg,
-    totalGoodCount:0,
-    totalCommentCount:0,
-    totalViewCount:0
+    filePath:bankerImg
   });
 
   // 편집 상태
@@ -33,10 +30,11 @@ const BankerInfo: React.FC = () => {
   useEffect(() => {
     const fetchBankerInfo = async () => {
       const response = await myPageService.getBankerMyPage(Number(userId));
-      if(!response.data.filePath){
-        response.data.filePath=bankerImg;
+      let {name, specializations, content, filePath} = response.data
+      if(!filePath){
+        filePath=bankerImg;
       }
-      setSavedProfile(response.data);
+      setSavedProfile({bankerId:Number(userId), name, specializations,content,filePath});
    
     }
     fetchBankerInfo();
@@ -81,10 +79,27 @@ const BankerInfo: React.FC = () => {
   };
 
   // 저장
-  const saveProfile = () => {
+  const saveProfile = async () => {
     setSavedProfile(editableProfile);
     // TODO: 사진 저장 안되는 이슈 있음.
-    
+
+    try {
+      const form = new FormData();
+      const profileBlob = new Blob([JSON.stringify(editableProfile)], {
+        type: 'application/json'
+      });
+      console.log(profileBlob)
+
+      form.append('profile', profileBlob);
+
+      const response = await bankerMypageService.modifyBankerProfile(form);
+      console.log(response)
+    } catch (error) {
+      console.log('Failed to update profile:', error);
+      message.error("수정에 실패했습니다.")
+    }
+
+
     setIsEditing(false);
   };
 
