@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Progress, Avatar } from 'antd';
 import userIcon from '../../assets/img/icon_user.png';
-import { findUser, findBanker } from '../../utils/userStorage';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../hoc/store';
 

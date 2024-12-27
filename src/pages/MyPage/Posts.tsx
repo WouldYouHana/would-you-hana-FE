@@ -1,15 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import { getPostsByEmail } from '../../utils/postStorage';
-import { Post } from '../../types/post';
 import PostList from '../../components/board/PostList/PostList';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../hoc/store';
 import icon_logo from '../../assets/img/icon_logo.png';
 import {myPageService} from "../../services/mypage.service.ts";
+import { LikesScrapDTO } from '../../types/dto/likesscrap.dto.ts';
 
 const Posts: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<LikesScrapDTO[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   const postsPerPage = 5;

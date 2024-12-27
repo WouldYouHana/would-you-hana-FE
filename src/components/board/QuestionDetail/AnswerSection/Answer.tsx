@@ -30,7 +30,15 @@ const Answer: React.FC<AnswerProps> = ({ answer }) => {
       const response = await myPageService.getBankerMyPage(answer.bankerId);
       setBankerInfo(response.data);
     }
+    const fetchGoodInfo = async () => {
+      const response = await qnaService.isCheckedGood({
+        questionId: answer.questionId,
+        customerId: Number(userId)
+      })
+      setIsGood(response.data)
+    }
     fetchBankerInfo();
+    fetchGoodInfo();
   }, [answer.bankerId]);
 
   const handleGoodClick = async () => {
@@ -109,7 +117,7 @@ const Answer: React.FC<AnswerProps> = ({ answer }) => {
           </div>
         </div>
 
-        <ReservationModal isOpen={isModalOpen} onOk={handleOk} onCancel={handleCancel} selectedBranchName={bankerInfo?.branchName || '지점정보없음'} selectedBankerName={bankerInfo?.name}/>
+        <ReservationModal isOpen={isModalOpen} onOk={handleOk} onCancel={handleCancel} selectedBranchName={bankerInfo?.branchName || '지점정보없음'} selectedBankerName={bankerInfo?.name||null}/>
       </div>
     </>
   );

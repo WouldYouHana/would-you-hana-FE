@@ -1,5 +1,3 @@
-import { CommunityPost } from '../types/community';
-
 export const Categories: string[] = [
   '예금/적금',
   '이체',
@@ -27,8 +25,4 @@ export const CommunityCategories: string[] = [
   '신용점수 올리기',
   '세금/납부',
   '학자금대출',
-];
-
-export const CommunityData: CommunityPost[] = [
-  // ... 기존 데이터 유지
 ];
