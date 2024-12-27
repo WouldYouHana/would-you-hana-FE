@@ -18,7 +18,7 @@ be004b3183a0ec849be87b893617bf31f5390ec7
 
 - git clone => https://github.com/WouldYouHana/would-you-hana-FE.git
 - `npm install`
-- `npm run dev` 실행 => http://localhost:5173/ 접속
+- `npm run dev` 실행 => https://localhost:5173/ 접속
 
 ## 기술 스택
 
