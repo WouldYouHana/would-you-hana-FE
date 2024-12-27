@@ -112,7 +112,6 @@ const QuestionRegister: React.FC = () => {
       const questionBlob = new Blob([JSON.stringify(question)], {
         type: 'application/json'
       });
-      console.log(questionBlob);
       form.append('question', questionBlob);
 
       //파일 데이터 추가

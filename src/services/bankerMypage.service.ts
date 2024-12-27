@@ -15,5 +15,15 @@ export const bankerMypageService = {
             }
         });
     },
-   
+    // 행원 프로필 수정
+    modifyBankerProfile: (data: FormData) => {
+        return request<string>({
+          method: 'POST',
+          url: `${BASE_URL}/my/bankers/mypage/modifyProfile`,
+          data,
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      },
 }
