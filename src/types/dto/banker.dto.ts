@@ -32,3 +32,11 @@ export interface BankerMyPageReturnDTO{
     totalCommentCount:number;
     totalViewCount:number;
 }
+
+export interface BankerProfileModifyDTO{
+    name:string;
+    bankerId:number;
+    specializations:string[];
+    content:string;
+    filePath:string;
+}
