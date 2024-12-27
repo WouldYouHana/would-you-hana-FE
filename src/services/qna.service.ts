@@ -116,5 +116,12 @@ export const qnaService = {
       url: `${BASE_URL}/qna/comment/${questionId}`,
       data
     });
+  },
+  isCheckedGood:(data: AnswerGoodRequestDTO)=>{
+    return request<boolean>({
+      method:'POST',
+      url: `${BASE_URL}/qna/answerLikeCheck`,
+      data
+    })
   }
 }; 
