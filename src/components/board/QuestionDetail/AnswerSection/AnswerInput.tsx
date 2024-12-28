@@ -44,7 +44,7 @@ const Answer: React.FC<AnswerInputProps> = ({ question, onSubmitAnswer, onChatbo
     if (!input?.trim()) return;
 
     try {
-      const response = await axios.post(`${BASE_URL}/get_answer`, {
+      const response = await axios.post(`https://api.wouldyouhana.site/get_answer`, {
         question: input,
       });
       setBotResult(response.data.answer) // 응답 텍스트

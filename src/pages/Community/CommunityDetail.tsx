@@ -17,7 +17,7 @@ const CommunityDetail: React.FC = () => {
   const [isScraped, setIsScraped] = useState<boolean>(false);
   const [isMyPost, setIsMyPost] = useState<boolean>(false);
 
-  const { userId } = useSelector((state: RootState) => state.auth);
+  const { userRole, userId } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     if (!postId) {
@@ -87,6 +87,7 @@ const CommunityDetail: React.FC = () => {
           {/* 게시글 헤더 */}
           <div className="flex flex-col gap-6 pb-3 border-b border-gray-200">
             <div className="flex flex-col gap-3">
+              <h2 className="text-md text-gray-400">{post.categoryName}</h2>
               <h1 className="text-3xl font-bold">
                 {post.title}
               </h1>
@@ -104,7 +105,9 @@ const CommunityDetail: React.FC = () => {
                       삭제
                     </Button>
                 )}
-                <Button icon={isScraped ? <StarFilled style={{color: 'orange'}} /> : <StarOutlined />} onClick={handleScrapClick}>스크랩</Button>
+                {userRole == 'C' && (
+                    <Button icon={isScraped ? <StarFilled style={{color: 'orange'}} /> : <StarOutlined />} onClick={handleScrapClick}>스크랩</Button>
+                )}
               </div>
             </div>
 
@@ -114,21 +117,21 @@ const CommunityDetail: React.FC = () => {
             </div>
 
             {/* 게시글 푸터 */}
-            <div className="text-gray-400" style={{fontSize:'13px'}}>
+            <div className="text-gray-400" style={{fontSize: '13px'}}>
               <span>{relativeTime(+new Date(post.createdAt))}</span>
               <span className="ml-4">
-                <LikeOutlined /> {post.likeCount}
+                <LikeOutlined/> {post.likeCount}
               </span>
               <span className="ml-4">
-                <MessageOutlined /> {post.commentList.length} 
+                <MessageOutlined/> {post.commentList.length}
               </span>
             </div>
           </div>
 
           {/* 댓글 섹션 */}
           <Comments
-            type="post"
-            commentList={post.commentList}
+              type="post"
+              commentList={post.commentList}
           />
         </div>
 

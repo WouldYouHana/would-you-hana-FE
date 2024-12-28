@@ -115,34 +115,38 @@ const QuestionDetail: React.FC = () => {
         <div className="flex flex-col gap-6 flex-1">
           <div className="flex flex-col gap-6 pb-3 border-b border-gray-200">
             <div className="flex flex-col gap-3">
-              <h1 className="text-3xl font-bold">
-                Q. {question.title}
-              </h1>
-              <div className="flex gap-1 text-gray-400" style={{fontSize:'13px'}}>
-                <span>조회 {question.viewCount}</span>
-                <span>·</span>
-                <span>{question.nickname}</span>
-              </div>
-              <div className="flex justify-end gap-2">
-                {question.answer === null && userRole === 'B' && (
-                  <Button
-                    type="primary"
-                    icon={<FormOutlined />}
-                    onClick={() => setShowAnswerInput(true)}
-                  >
-                    답변하기
-                  </Button>
-                )}
-                {isMyQna && (
-                  <Button
-                    icon={<DeleteOutlined />}
-                    onClick={handleQuestionDelete}
-                  >
-                    삭제
-                  </Button>
-                )}
-                <Button icon={isScraped ? <StarFilled style={{color: 'orange'}} /> : <StarOutlined />} onClick={handleScrapClick}>스크랩</Button>
-              </div>
+              <h2 className="text-md text-gray-400">{question.cat}</h2>
+                <h1 className="text-3xl font-bold">
+                  Q. {question.title}
+                </h1>
+                <div className="flex gap-1 text-gray-400" style={{fontSize: '13px'}}>
+                  <span>조회 {question.viewCount}</span>
+                  <span>·</span>
+                  <span>{question.nickname}</span>
+                </div>
+                <div className="flex justify-end gap-2">
+                  {question.answer === null && userRole === 'B' && (
+                      <Button
+                          type="primary"
+                          icon={<FormOutlined/>}
+                          onClick={() => setShowAnswerInput(true)}
+                      >
+                        답변하기
+                      </Button>
+                  )}
+                  {isMyQna && (
+                      <Button
+                          icon={<DeleteOutlined/>}
+                          onClick={handleQuestionDelete}
+                      >
+                        삭제
+                      </Button>
+                  )}
+                  {userRole == 'C' && (
+                      <Button icon={isScraped ? <StarFilled style={{color: 'orange'}}/> : <StarOutlined/>}
+                              onClick={handleScrapClick}>스크랩</Button>
+                  )}
+                </div>
             </div>
 
             {/* 게시글 내용 */}
