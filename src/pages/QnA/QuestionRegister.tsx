@@ -33,17 +33,8 @@ const QuestionRegister: React.FC = () => {
     content: '',
     categoryName: '',
   });
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
+  const [fileList, setFileList] = useState<File[]>([]);
   const [isChecked, setIsChecked] = useState(false);
-
-  useEffect(() => {
-    const storedFiles = localStorage.getItem('uploadedImages');
-    if (storedFiles) {
-      setFileList(JSON.parse(storedFiles));
-    }
-  }, []);
 
   const handleInputChange = useCallback((
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -52,34 +43,12 @@ const QuestionRegister: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   }, []);
 
-  const handlePreview = useCallback(async (file: UploadFile) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj as File);
-    }
-    setPreviewImage(file.url || (file.preview as string));
-    setPreviewOpen(true);
-  }, []);
 
-  const handleChange: UploadProps['onChange'] = useCallback(async ({ fileList: newFileList }: { fileList: UploadFile[] }) => {
-    if (newFileList.length > 5) {
-      message.error('최대 5개의 이미지만 업로드할 수 있습니다.');
-      return;
-    }
+  const handleChange = (newFiles: File[]) => {
+    setFileList(newFiles);
+  };
 
-    const updatedFileList = await Promise.all(
-      newFileList.map(async (file) => {
-        if (!file.url && !file.preview && file.originFileObj) {
-          file.preview = await getBase64(file.originFileObj);
-        }
-        return file;
-      })
-    );
-
-    setFileList(updatedFileList);
-    localStorage.setItem('uploadedImages', JSON.stringify(updatedFileList));
-  }, []);
-
-  const handleRegister = useCallback(() => {
+  const handleRegister = useCallback(async () => {
     const { categoryName, title, content } = formData;
 
     if (!categoryName || !title || !content) {
@@ -92,7 +61,7 @@ const QuestionRegister: React.FC = () => {
       return;
     }
 
-    if(!userId){
+    if(!userId) {
       message.error('로그인이 필요합니다.');
       return;
     }
@@ -106,22 +75,19 @@ const QuestionRegister: React.FC = () => {
         customerId: userId,
         categoryName,
         location: userLocation || '성동구'
-      }
+      };
 
-      // question JSON 데이터 추가 시 content-type 설정
-      const questionBlob = new Blob([JSON.stringify(question)], {
+      // question JSON 데이터 추가
+      form.append('question', new Blob([JSON.stringify(question)], {
         type: 'application/json'
-      });
-      form.append('question', questionBlob);
+      }));
 
-      //파일 데이터 추가
-      fileList.forEach((file) => {
-        if (file.originFileObj) {
-          form.append('file', file.originFileObj);
-        }
+      // 파일 데이터 추가 - 백엔드의 MultipartFile List와 매칭
+      fileList.forEach(file => {
+        form.append('file', file);  // 'files'는 백엔드의 매개변수명과 일치해야 함
       });
 
-      qnaService.createQuestion(form);
+      await qnaService.createQuestion(form);
       message.success('질문이 등록되었습니다!');
       navigate('/qna');
     } catch (error) {
@@ -187,11 +153,7 @@ const QuestionRegister: React.FC = () => {
         <div className="mb-6">
           <ImageUpload
             fileList={fileList}
-            onPreview={handlePreview}
             onChange={handleChange}
-            previewImage={previewImage}
-            previewOpen={previewOpen}
-            onPreviewClose={() => setPreviewImage('')}
           />
         </div>
       </div>

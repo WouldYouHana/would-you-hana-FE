@@ -37,6 +37,7 @@ const QuestionDetail: React.FC = () => {
 
       try {
         const response = await qnaService.getQuestionDetail(Number(postId));
+        console.log("question",response.data);
         setQuestion(response.data);
         setIsMyQna(response.data.customerId === userId); // 내가 작성한 글인 경우 true
       } catch (error) {
@@ -115,7 +116,7 @@ const QuestionDetail: React.FC = () => {
         <div className="flex flex-col gap-6 flex-1">
           <div className="flex flex-col gap-6 pb-3 border-b border-gray-200">
             <div className="flex flex-col gap-3">
-              <h2 className="text-md text-gray-400">{question.cat}</h2>
+              <h2 className="text-md text-gray-400">{question.categoryId}</h2>
                 <h1 className="text-3xl font-bold">
                   Q. {question.title}
                 </h1>
@@ -152,6 +153,17 @@ const QuestionDetail: React.FC = () => {
             {/* 게시글 내용 */}
             <div className="w-full">
               <p>{question.content}</p>
+              <div className="flex gap-2 mt-8">
+                {question.filePaths.map((filePath, index) => (
+                  <img 
+                    src={filePath} 
+                    alt={`file-${index}`} 
+                    key={index} 
+                    className="h-[180px] w-[180px] object-cover rounded-md border border-gray-200" 
+                    onClick={() => window.open(filePath, '_blank')}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* 게시글 푸터 */}
