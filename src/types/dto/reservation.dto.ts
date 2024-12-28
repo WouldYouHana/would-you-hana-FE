@@ -1,4 +1,5 @@
 export interface ReservationResponseDTO{
+    customerName: string;
     branchName: string;
     rdayTime: string;
     bankerName: string;

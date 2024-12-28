@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios'
 import { Carousel, message } from 'antd';
 import { config } from '../../../config/config';
+import { districtService } from '../../../services/district.service';
 
 interface TrendingKeywordsProps {
   carouselIndex: number;
@@ -14,15 +15,17 @@ const TrendingKeywords: React.FC<TrendingKeywordsProps> = ({
   onCarouselChange,
   districtName
 }) => {
-  const [keywords, setKeywords] = useState<string[][]>([]); // 초기 값을 빈 배열로 설정
-  const BASE_URL = config.aiURL;
+  const [keywords, setKeywords] = useState<{keyword: string}[]>([]); // 초기 값을 빈 배열로 설정
+  // const BASE_URL = config.aiURL;
 
   useEffect(() => {
     const fetchKeywords = async () => {
       try {
-    const response = await axios.get(`${BASE_URL}/hot_keywords`);
-        console.log('Fetched keywords:', response.data.keywords);  // 키워드 확인용 로그
-        setKeywords(response.data.popular_keywords || []); // 응답이 없거나 형식이 맞지 않으면 빈 배열 설정
+        const userLocation = localStorage.getItem('userLocation');
+        const response = await districtService.getHotKeywords(userLocation);
+    // const response = await axios.get(`${BASE_URL}/hot_keywords`);
+        console.log('Fetched keywords:', response.data);  // 키워드 확인용 로그
+        setKeywords(response.data || []); // 응답이 없거나 형식이 맞지 않으면 빈 배열 설정
       } catch (error) {
         console.error('Error fetching keywords:', error);
         message.error('키워드 추출 실패');
@@ -31,9 +34,6 @@ const TrendingKeywords: React.FC<TrendingKeywordsProps> = ({
     
     fetchKeywords();  // 컴포넌트가 처음 렌더링될 때 데이터 요청
   }, []);  // 빈 배열을 전달하여 한 번만 실행되도록 설정
-
-  // 추가적으로 상태도 콘솔에 출력
-  console.log('Keywords state:-------------------', keywords);
 
   return (
     <div className="flex flex-col justify-center  mr-[150px] mt-0">
@@ -83,7 +83,7 @@ const TrendingKeywords: React.FC<TrendingKeywordsProps> = ({
                 index === carouselIndex ? 'focused' : ''
               }`}
             >
-              {keyword[0]}
+              {keyword.keyword}
             </span>
           ))}
         </Carousel>

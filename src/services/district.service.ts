@@ -3,6 +3,7 @@ import { config } from '../config/config';
 import { QnaListDTO } from '../types/dto/question.dto';
 import { CommunityListDTO } from '../types/dto/community.dto';
 import { CustomerResponseDTO } from '../types/dto/customer.dto';
+import { KeywordResponseDTO } from '../types/dto/keyword.dto';
 
 const BASE_URL = config.apiUrl;
 
@@ -26,6 +27,13 @@ export const districtService = {
         return request<CustomerResponseDTO[]>({
             method: 'GET',
             url: `${BASE_URL}/district/${location}/activeUser`,
+        });
+    },
+    // 지역구별 인기 키워드 5개 조회
+    getHotKeywords:(location: string) =>{
+        return request<KeywordResponseDTO[]>({
+            method: 'GET',
+            url: `${BASE_URL}/district/${location}/keywords`
         });
     },
 }
