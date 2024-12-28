@@ -67,7 +67,7 @@ const Answer: React.FC<AnswerInputProps> = ({ question, onSubmitAnswer, onChatbo
           className='h-52'
         />
         <div className='buttons flex justify-between'>
-          <Button size='large' onClick={handleTemplateClick}>✍️ 템플릿 사용하기</Button>
+          <Button size='large' onClick={handleTemplateClick}>✍️ AI 답변 생성</Button>
           <div className='flex  gap-5'>
             <Tooltip
               open
