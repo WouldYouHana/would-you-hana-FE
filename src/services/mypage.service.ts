@@ -1,6 +1,6 @@
 import { request } from '../hoc/request';
 import { config } from '../config/config';
-import { LikesScrapDTO, ScrapPostDTO, ScrapQuestionDTO } from '../types/dto/likesscrap.dto';
+import {LikePostDTO, LikesScrapDTO, ScrapPostDTO, ScrapQuestionDTO} from '../types/dto/likesscrap.dto';
 import { BankerMyPageReturnDTO } from '../types/dto/banker.dto';
 
 const BASE_URL = config.apiUrl;
@@ -24,7 +24,7 @@ export const myPageService = {
 
   //좋아요한 게시물 목록 조회
   getLikedPosts: (customerId: number) => {
-    return request<LikesScrapDTO[]>({
+    return request<LikePostDTO[]>({
         method: 'GET',
         url: `${BASE_URL}/my/post/likeList/${customerId}`
     });

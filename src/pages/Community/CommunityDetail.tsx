@@ -16,7 +16,8 @@ const CommunityDetail: React.FC = () => {
   const [post, setPost] = useState<CommunityResponseDTO|null>(null);
   const [isScraped, setIsScraped] = useState<boolean>(false);
   const [isMyPost, setIsMyPost] = useState<boolean>(false);
-
+  const [likeCount, setLikeCount] = useState<number>(0);
+  const [liked, setLiked] = useState(false);
   const { userRole, userId } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
@@ -35,6 +36,7 @@ const CommunityDetail: React.FC = () => {
           return;
         }
         setPost(response.data);
+        setLikeCount(response.data.likeCount);
         setIsMyPost(response.data.customerId == userId);
         
       }catch(error){
@@ -77,6 +79,18 @@ const CommunityDetail: React.FC = () => {
     setIsScraped(!isScraped);
   };
 
+  const handleLikeClick = async () => {
+    try {
+      let newLikeCount;
+      // 이미 좋아요를 눌렀으면, 좋아요 취소 (수 감소)
+      const response = await likesscrapService.likePostRequest({postId: parseInt(postId), customerId: Number(userId)});
+      newLikeCount = response.data;
+      setLikeCount(newLikeCount); // 좋아요 수 업데이트
+      setLiked(!liked); // 좋아요 상태 토글
+    } catch (error) {
+      console.error('Error updating like count:', error);
+    }
+  };
 
   if (!post) return null;
 
@@ -119,8 +133,8 @@ const CommunityDetail: React.FC = () => {
             {/* 게시글 푸터 */}
             <div className="text-gray-400" style={{fontSize: '13px'}}>
               <span>{relativeTime(+new Date(post.createdAt))}</span>
-              <span className="ml-4">
-                <LikeOutlined/> {post.likeCount}
+              <span className="ml-4" onClick={handleLikeClick}>
+                <LikeOutlined/> {likeCount}
               </span>
               <span className="ml-4">
                 <MessageOutlined/> {post.commentList.length}

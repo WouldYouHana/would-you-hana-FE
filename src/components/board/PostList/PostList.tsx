@@ -3,7 +3,7 @@ import { Pagination } from 'antd';
 import iconUser from '../../../assets/img/icon_user_board.jpg';
 import { relativeTime } from '../../../utils/stringFormat';
 import { QnaListDTO } from '../../../types/dto/question.dto';
-import { ScrapPostDTO, ScrapQuestionDTO } from '../../../types/dto/likesscrap.dto';
+import {LikePostDTO, ScrapPostDTO, ScrapQuestionDTO} from '../../../types/dto/likesscrap.dto';
 
 interface PostListProps {
   posts: (QnaListDTO | ScrapPostDTO | ScrapQuestionDTO)[];
@@ -15,10 +15,13 @@ interface PostListProps {
 }
 
 // 타입 가드 함수
-const isScrapPostDTO = (post: QnaListDTO | ScrapPostDTO | ScrapQuestionDTO): post is ScrapPostDTO => {
+const isScrapPostDTO = (post: QnaListDTO | ScrapPostDTO | ScrapQuestionDTO | LikePostDTO): post is ScrapPostDTO => {
   return (post as ScrapPostDTO).postId !== undefined; // QnaListDTO에만 존재하는 속성으로 확인
 };
-const isQnaListDTO = (post: QnaListDTO | ScrapPostDTO | ScrapQuestionDTO): post is QnaListDTO => {
+const isLikePostDTO = (post: QnaListDTO | ScrapPostDTO | ScrapQuestionDTO | LikePostDTO): post is LikePostDTO => {
+  return (post as ScrapPostDTO).postId !== undefined; // QnaListDTO에만 존재하는 속성으로 확인
+};
+const isQnaListDTO = (post: QnaListDTO | ScrapPostDTO | ScrapQuestionDTO | LikePostDTO): post is QnaListDTO => {
   return (post as QnaListDTO).answerBanker !== undefined; // QnaListDTO에만 존재하는 속성으로 확인
 };
 
@@ -54,7 +57,11 @@ const PostList: React.FC<PostListProps> = ({
                   조회 {post.viewCount}
                 </span>
                 <span className="mx-1">·</span>
-                <span>도움돼요 {post.likeCount}</span>
+                {isScrapPostDTO(post) ? (
+                    <span>좋아요 {post.likeCount}</span>
+                ): (
+                    <span>도움돼요 {post.likeCount}</span>
+                )}
                 <span className="mx-1">·</span>
                 {isQnaListDTO(post) && (
                   <>
@@ -66,19 +73,25 @@ const PostList: React.FC<PostListProps> = ({
               </p>
               {/* 행원 이름 */}
               <div className="flex items-center">
-                {isQnaListDTO(post) && post.answerBanker && post.answerBanker !== '답변 대기중' ? (
-                  <>
-                    <img
-                      src={iconUser}
-                      alt="User Avatar"
-                      className="w-[25px] h-[25px] rounded-full"
-                    />
-                    <span className="ml-2 text-hoverColor font-extrabold">
+                {isLikePostDTO(post) ? (
+                    <span className="text-gray-500 text-[13px]">{post.nickname}</span>
+                ) : (
+                    <>
+                      {isQnaListDTO(post) && post.answerBanker && post.answerBanker !== '답변 대기중' ? (
+                          <>
+                            <img
+                                src={iconUser}
+                                alt="User Avatar"
+                                className="w-[25px] h-[25px] rounded-full"
+                            />
+                            <span className="ml-2 text-hoverColor font-extrabold">
                       {post.answerBanker}
                     </span>
-                  </>
-                ) : (
-                  <span className="text-gray-500 text-[13px]">답변 대기중</span>
+                          </>
+                      ) : (
+                          <span className="text-gray-500 text-[13px]">답변 대기중</span>
+                      )}
+                    </>
                 )}
               </div>
             </div>

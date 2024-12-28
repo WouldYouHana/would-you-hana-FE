@@ -5,7 +5,7 @@ import { myPageService } from '../../services/mypage.service';
 import { LikesScrapDTO } from '../../types/dto/likesscrap.dto';
 
 const Likes: React.FC = () => {
-  const [posts, setPosts] = useState<LikesScrapDTO[]>([]);
+  const [posts, setPosts] = useState<LikePostDTO[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   const postsPerPage = 5;

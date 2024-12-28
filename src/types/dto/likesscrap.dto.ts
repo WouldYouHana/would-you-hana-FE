@@ -30,6 +30,19 @@ export interface ScrapPostDTO{
     createdAt : string;
     updatedAt : string;
 }
+
+export interface LikePostDTO{
+    requestId : number;
+    postId : number;
+    categoryName : string;
+    title : string;
+    nickname : string;
+    likeCount : number;
+    viewCount : number;
+    createdAt : string;
+    updatedAt : string;
+}
+
 export interface ScrapQuestionRequestDTO {
     questionId: number;
     customerId: number;
@@ -66,4 +79,9 @@ export interface ScrapPostResponseDTO {
     commentCount: number;
     createdAt: string;
     updatedAt: string;
+}
+
+export interface likePostRequestDTO {
+    postId: number;
+    customerId: number;
 }

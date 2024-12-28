@@ -132,6 +132,7 @@ const Community: React.FC = () => {
                   {' · '}좋아요 {item.likeCount}
                   {' · '}스크랩 {item.scrapCount}
                   {' · '}댓글 {item.commentCount}
+                  {' · '}{item.nickname}
                 </p>
               </div>
             </div>

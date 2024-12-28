@@ -1,6 +1,11 @@
 import { config } from "../config/config";
 import { request } from "../hoc/request";
-import { ScrapPostRequestDTO, ScrapQuestionRequestDTO, ScrapQuestionResponseDTO } from "../types/dto/likesscrap.dto";
+import {
+    likePostRequestDTO,
+    ScrapPostRequestDTO,
+    ScrapQuestionRequestDTO,
+    ScrapQuestionResponseDTO
+} from "../types/dto/likesscrap.dto";
 
 const BASE_URL = config.apiUrl;
 
@@ -38,6 +43,13 @@ export const likesscrapService = {
         return request<boolean>({
             method: 'GET',
             url: `${BASE_URL}/my/post/scrap/${customerId}/${postId}`,
+        })
+    },
+    likePostRequest: (data: likePostRequestDTO) => {
+        return request<number>({
+            method: 'POST',
+            url: `${BASE_URL}/post/dolike`,
+            data
         })
     }
 }
