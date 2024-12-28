@@ -73,7 +73,7 @@ const Board: React.FC = () => {
   useEffect(() => {
     getQuestions();
     getTodayQuestions();
-  }, [sortOrder, userLocation]);
+  }, [sortOrder, userLocation, navigate]);
 
 
   const handleCategoryChange = useCallback((categoryName: string) => {

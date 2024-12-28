@@ -21,7 +21,7 @@ export interface ScrapQuestionDTO{
 
 export interface ScrapPostDTO{
     requestId : number;
-    questionId : number;
+    postId : number;
     categoryName : string;
     title : string;
     customerName : string;
@@ -32,6 +32,10 @@ export interface ScrapPostDTO{
 }
 export interface ScrapQuestionRequestDTO {
     questionId: number;
+    customerId: number;
+}
+export interface ScrapPostRequestDTO {
+    postId: number;
     customerId: number;
 }
 

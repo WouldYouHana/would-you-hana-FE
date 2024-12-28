@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
-// import { getPosts } from '../../utils/postStorage';
-import { Post } from '../../types/post';
 import PostList from '../../components/board/PostList/PostList';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../hoc/store';
 import { myPageService } from '../../services/mypage.service';
+import { LikesScrapDTO } from '../../types/dto/likesscrap.dto';
 
 const Likes: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<LikesScrapDTO[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   const postsPerPage = 5;
@@ -31,7 +28,6 @@ const Likes: React.FC = () => {
     try{
       const customerId = Number(localStorage.getItem('userId'));
       const response = await myPageService.getLikedPosts(customerId);
-      console.log(customerId);
       setPosts(response.data);
     }catch(error){
       console.error('failed to fetch liked posts:', error);

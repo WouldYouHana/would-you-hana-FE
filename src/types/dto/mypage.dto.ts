@@ -7,9 +7,9 @@ export interface CustomerInfoResponseDTO {
 
   // 수정 가능 필드
   nickname: string;
-  birthDate: string;
-  gender: string;
-  location: string;
+  birthDate?: string;
+  gender?: string;
+  location?: string;
   phone: string;
 }
 
@@ -27,4 +27,18 @@ export interface BankerInfoResponeDTO {
     bankerName: string;
     bankerEmail: string;
     branchName: string;
+}
+
+export interface BankerInfoUpdateDTO {
+    password:string;
+    branchName: string;
+}
+
+export interface CustomerInfoUpdateDTO{
+    password:string;
+    nickname:string;
+    birthDate?:string;
+    gender?:string;
+    location?:string;
+    phone:string;
 }
