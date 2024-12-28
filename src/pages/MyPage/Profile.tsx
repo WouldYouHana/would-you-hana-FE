@@ -5,7 +5,7 @@ import { RootState } from '../../hoc/store';
 import CustomerInfo from '../../components/my/CustomerInfo';
 import Activity from '../../components/my/Activity';
 import BankerInfo from '../../components/my/BankerInfo';
-import BankerCards from '../../components/BankerCards';
+// import BankerCards from '../../components/BankerCards';
 
 const { Content } = Layout;
 
@@ -19,10 +19,10 @@ const CustomerProfile: React.FC = () => {
         <Activity />
 
         {/* 나에게 답변해준 은행원 */}
-        <div className="mt-20">
+        {/* <div className="mt-20">
           <h1 className="text-lg font-bold mb-5">나에게 답변해준 행원</h1>
           <BankerCards></BankerCards>
-        </div>
+        </div> */}
       </Content>
     </Layout>
   );

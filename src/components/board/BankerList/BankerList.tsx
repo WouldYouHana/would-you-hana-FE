@@ -7,7 +7,7 @@ import { RootState } from '../../../hoc/store';
 import { AxiosResponse } from 'axios';
 import { bankerService } from '../../../services/banker.service';
 
-import bankerImg from '../../../assets/img/banker4.png';
+import bankerImg from '../../../assets/img/banker1.png';
 
 
 const BankerList: React.FC = () => {
@@ -55,7 +55,7 @@ const BankerList: React.FC = () => {
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 overflow-hidden">
                   <img
-                    src={bankerImg}
+                    src={banker.filePath||bankerImg}
                     className="h-full w-auto rounded-full object-cover object-[15%]"
                   />
                 </div>

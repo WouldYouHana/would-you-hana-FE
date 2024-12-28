@@ -7,12 +7,24 @@ import {
   CommentOutlined,
 } from '@ant-design/icons';
 import star4 from '../../assets/img/stars/star4.png';
-
+import { useEffect, useState } from 'react';
+import { BankerMyPageReturnDTO } from '../../types/dto/banker.dto';
+import { myPageService } from '../../services/mypage.service';
 const { Content } = Layout;
 
 /* 내 정보 및 이 주의 활약 */
 const Activity: React.FC = () => {
-  const userRole = useSelector((state: RootState) => state.auth.userRole);
+  const {userId,userRole} = useSelector((state: RootState) => state.auth);
+
+  const [activity, setActivity] = useState<BankerMyPageReturnDTO>();
+
+  useEffect(() => {
+    const fetchActivity = async () => {
+      const response = await myPageService.getBankerMyPage(Number(userId));
+      setActivity(response.data);
+    };
+    fetchActivity();
+  }, [userId]);
 
   return (
     <Content>
@@ -39,15 +51,15 @@ const Activity: React.FC = () => {
           >
             <div style={{width:'100%', display:'flex', flexDirection:'column', alignItems:'center', gap:'18px'}}>
               <HeartOutlined style={{fontSize: '20px'}}/> 
-              <p style={{fontSize: '16px'}}>{userRole=='C'?'좋아요':'도움돼요'} <span id="likes-count" className='text-mainColor'>53</span></p>
+              <p style={{fontSize: '16px'}}>{userRole=='C'?'좋아요':'도움돼요'} <span id="likes-count" className='text-mainColor'>{activity?.totalGoodCount||0}</span></p>
             </div>
             <div style={{width:'100%', display:'flex', flexDirection:'column', alignItems:'center', gap:'18px'}}>
               <MessageOutlined style={{fontSize: '20px'}}/> 
-              <p style={{fontSize: '16px'}}>답변수 <span id="answers-count" className='text-mainColor'>5</span></p>
+              <p style={{fontSize: '16px'}}>답변수 <span id="answers-count" className='text-mainColor'>{activity?.totalCommentCount||0}</span></p>
             </div>
             <div style={{width:'100%', display:'flex', flexDirection:'column', alignItems:'center', gap:'18px'}}>
               <CommentOutlined style={{fontSize: '20px'}}/> 
-              <p style={{fontSize: '16px'}}>댓글수 <span id="comments-count" className='text-mainColor'>34</span></p>
+              <p style={{fontSize: '16px'}}>조회수 <span id="comments-count" className='text-mainColor'>{activity?.totalViewCount||0}</span></p>
             </div>
           </div>
         </div>
