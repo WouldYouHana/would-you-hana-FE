@@ -9,12 +9,14 @@ import bankerImg from '../../assets/img/banker1.png';
 
 import BankerCards from '../../components/BankerCards';
 import { myPageService } from '../../services/mypage.service';
+import ReservationModal from '../../components/ReservationModal';
 const { Title, Text } = Typography;
 
 const Profile: React.FC = () => {
   const { bankerId } = useParams<{ bankerId: string }>();
 
   const [bankerInfo, setBankerInfo] = useState<BankerMyPageReturnDTO | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchBankerInfo = async () => {
@@ -23,6 +25,19 @@ const Profile: React.FC = () => {
     }
     fetchBankerInfo();
   }, [bankerId]);
+
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
     return (
         <div className="w-full px-[15%] py-5">
@@ -104,6 +119,7 @@ const Profile: React.FC = () => {
                         type="default" 
                         block 
                         className="mb-2.5 py-7 bg-black text-white rounded-2xl"
+                        onClick={showModal}
                     >
                         원하는 시간에 상담 예약하기
                     </Button>
@@ -116,6 +132,8 @@ const Profile: React.FC = () => {
                 <BankerCards exceptBankerId={Number(bankerId)}></BankerCards>
             </div>
            
+        <ReservationModal isOpen={isModalOpen} onOk={handleOk} onCancel={handleCancel} selectedBranchName={bankerInfo?.branchName || '지점정보없음'} selectedBankerName={bankerInfo?.name||null}/>
+
         </div>
     );
 };
