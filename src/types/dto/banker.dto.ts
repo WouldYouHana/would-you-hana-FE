@@ -20,6 +20,7 @@ export interface BankerListReturnDTO{
     branchName:number;
     content:string;
     specializations:SpecializationResponseDTO[];
+    filePath:string;
 }
 
 export interface BankerMyPageReturnDTO{

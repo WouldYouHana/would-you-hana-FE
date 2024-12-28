@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Button, Input, Upload, message } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Layout, Button, Input, message } from 'antd';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../hoc/store';
-import type { UploadProps } from 'antd/es/upload';
 import { BankerProfileModifyDTO } from '../../types/dto/banker.dto';
 import { myPageService } from '../../services/mypage.service';
 import bankerImg from '../../assets/img/banker1.png';
@@ -26,6 +24,8 @@ const BankerInfo: React.FC = () => {
   const [editableProfile, setEditableProfile] = useState(savedProfile);
   const [newTag, setNewTag] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBankerInfo = async () => {
@@ -52,6 +52,7 @@ const BankerInfo: React.FC = () => {
     setEditableProfile(savedProfile);
   }, [savedProfile]);
 
+
   // 태그 추가
   const addTag = () => {
     if (newTag && !editableProfile.specializations.includes(newTag.trim())) {
@@ -71,123 +72,97 @@ const BankerInfo: React.FC = () => {
     });
   };
 
-  // 사진 업로드
-  const handlePhotoUpload: UploadProps['customRequest'] = (options) => {
-    const { file, onSuccess, onError } = options;
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // 파일 크기 체크 (2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        message.error('이미지 크기는 2MB보다 작아야 합니다.');
+        return;
+      }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      setEditableProfile({
-        ...editableProfile,
-        filePath: reader.result as string,
-      });
-      onSuccess?.('ok');
-    };
-    reader.onerror = (error) => {
-      console.error('파일 읽기 중 오류:', error);
-      onError?.(new Error('File upload failed'));
-    };
-    reader.readAsDataURL(file as Blob);
+      // 이미지 파일 타입 체크
+      if (!file.type.startsWith('image/')) {
+        message.error('이미지 파일만 업로드할 수 있습니다.');
+        return;
+      }
+
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
   };
 
-  // 저장
   const saveProfile = async () => {
-    setSavedProfile(editableProfile);
-    // TODO: 사진 저장 안되는 이슈 있음.
-
     try {
       const form = new FormData();
-      const profileBlob = new Blob([JSON.stringify(editableProfile)], {
+
+      // JSON 데이터 추가
+      const profileData = {
+        bankerId: editableProfile.bankerId,
+        name: editableProfile.name,
+        specializations: editableProfile.specializations,
+        content: editableProfile.content
+      };
+
+      form.append('profile', new Blob([JSON.stringify(profileData)], {
         type: 'application/json'
+      }));
+
+      // 파일이 선택된 경우에만 추가
+      if (selectedFile) {
+        form.append('file', selectedFile);
+      }
+
+      await bankerMypageService.modifyBankerProfile(form);
+      
+      // 성공적으로 저장된 경우 상태 업데이트
+      setSavedProfile({
+        ...editableProfile,
+        filePath: previewUrl || editableProfile.filePath
       });
-      console.log(profileBlob)
-
-      form.append('profile', profileBlob);
-
-      const response = await bankerMypageService.modifyBankerProfile(form);
-      console.log(response)
+      setIsEditing(false);
+      message.success('프로필이 성공적으로 저장되었습니다.');
     } catch (error) {
-      console.log('Failed to update profile:', error);
-      message.error("수정에 실패했습니다.")
+      console.error('Failed to save profile:', error);
+      message.error('프로필 저장에 실패했습니다.');
     }
-
-
-    setIsEditing(false);
   };
-
   return (
-    <Content
-      style={{
-        width: '100%',
-        marginBottom: '24px',
-      }}
-    >
-      <div style={{ display: 'flex', gap: '30px', alignItems: 'start' }}>
-        {/* 이미지 섹션 */}
-        <div
-          style={{
-            display: 'flex',
-            width: '100%',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '8px',
-          }}
-        >
-          <div
-            style={{
-              marginTop:'20px',
-              marginBottom: '20px',
-              textAlign: 'center',
-              border: '1px dashed #d9d9d9',
-              borderRadius: '8px',
-              height: '200px',
-              width: '100%',
-              maxWidth: '400px',
-              margin: '0 auto',
-              backgroundImage: `url(${
-                isEditing ? editableProfile.filePath : savedProfile.filePath
-              })`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {isEditing && !editableProfile.filePath && (
-              <Upload
-                accept="image/*"
-                showUploadList={false}
-                customRequest={handlePhotoUpload}
-              >
-                <Button icon={<UploadOutlined />}>사진 업로드</Button>
-              </Upload>
-            )}
+    <Content>
+      <div className="flex flex-col items-center py-8">
+        <div className="w-full flex gap-8">
+          {/* 프로필 사진 섹션 */}
+          <div className='flex-1 flex flex-col gap-5'>
+            <div className="flex flex-col items-center gap-4 mt-5">
+              <img
+                src={previewUrl || editableProfile.filePath}
+                alt="Profile"
+                className="w-[400px] h-[200px] rounded-2xl object-cover border border-dashed border-gray-300"
+              />
+              {isEditing && (
+                <div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    id="profile-upload"
+                  />
+                  <label
+                    htmlFor="profile-upload"
+                    className="px-4 py-2 bg-gray-100 rounded cursor-pointer hover:bg-gray-200"
+                  >
+                    사진 변경
+                  </label>
+                </div>
+              )}
+            </div>
           </div>
 
-          {isEditing && (
-            <Button
-              size="small"
-              style={{ width: '100px' }}
-              onClick={() =>
-                setEditableProfile({ ...editableProfile, filePath: '' })
-              }
-            >
-              사진 삭제
-            </Button>
-          )}
-        </div>
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '14px',
-          }}
-        >
-          {/* 이름 섹션 */}
-          <div>
-            <h4 style={{ fontWeight: 'bold', marginBottom: '8px' }}>이름</h4>
+          <div className='w-full flex-1 flex flex-col gap-5'>
+            {/* 이름 섹션 */}
+            <div>
+              <h4 style={{ fontWeight: 'bold', marginBottom: '8px' }}>이름</h4>
             <Input
               value={savedProfile.name}
               readOnly
@@ -321,6 +296,10 @@ const BankerInfo: React.FC = () => {
               </Button>
             )}
           </div>
+
+          </div>
+
+
         </div>
       </div>
     </Content>

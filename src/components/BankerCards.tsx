@@ -50,7 +50,7 @@ const BankerCard: React.FC<bankerCardProps> = ({exceptBankerId}) => {
                 <Col span={8} key={banker.bankerName}>
                     <Card className="rounded-2xl border border-[#d3d3d3]" bodyStyle={{ padding: 0 }}>
                         <Row>
-                            <img src={bankerImg} alt="Specialist" className="w-full mb-5 rounded-t-2xl" />
+                            <img src={banker.filePath||bankerImg} alt="Specialist" className="w-full h-32 object-cover mb-5 rounded-t-2xl" />
                         </Row>
                         <Row className='min-h-64'>
                             <Col span={24} className="px-5">

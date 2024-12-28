@@ -3,7 +3,7 @@ import { Card, Col, Row, Button, Typography } from 'antd';
 import { PhoneFilled, DesktopOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { BankerMyPageReturnDTO } from '../../types/dto/banker.dto';
 import { useParams } from 'react-router-dom';
-import bankerImg from '../../assets/img/banker4.png';
+import bankerImg from '../../assets/img/banker1.png';
 
 
 
@@ -35,7 +35,7 @@ const Profile: React.FC = () => {
                             <div className="w-full bg-mainColor text-right text-white py-2.5 rounded-t-2xl px-5">
                               하나은행 {bankerInfo?.branchName}
                             </div>
-                            <img src={bankerImg} alt="Profile" className="w-full mb-5" />
+                            <img src={bankerInfo?.filePath||bankerImg} alt="Profile" className="w-full mb-5" />
                         </Row>
                         <Row>
                             <Col span={24} className="px-5">
@@ -65,8 +65,8 @@ const Profile: React.FC = () => {
                 <Col span={8} className="flex flex-col">
                     <Card className="mb-2.5 rounded-2xl border border-[#d3d3d3]" bodyStyle={{ padding: 15 }}>
                         <div>
-                            <div className="mb-2.5 font-bold">상담시간</div>
-                            <p><ClockCircleOutlined className='mr-1' /> 평일 10:00 - 18:00</p>
+                            <div className="mb-2.5 font-bold text-lg">상담시간</div>
+                            <p className='text-lg'><ClockCircleOutlined className='mr-1' /> 평일 10:00 - 18:00</p>
                             <p className='ml-5 text-xs text-red-500'>주말 및 공휴일 제외</p>
                         </div>
                     </Card>
