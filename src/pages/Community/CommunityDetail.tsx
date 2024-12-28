@@ -83,7 +83,7 @@ const CommunityDetail: React.FC = () => {
     try {
       let newLikeCount;
       // 이미 좋아요를 눌렀으면, 좋아요 취소 (수 감소)
-      const response = await likesscrapService.likePostRequest({postId: parseInt(postId), customerId: Number(userId)});
+      const response = await likesscrapService.likePostRequest({postId: Number(postId), customerId: Number(userId)});
       newLikeCount = response.data;
       setLikeCount(newLikeCount); // 좋아요 수 업데이트
       setLiked(!liked); // 좋아요 상태 토글
@@ -128,6 +128,17 @@ const CommunityDetail: React.FC = () => {
             {/* 게시글 내용 */}
             <div className="w-full">
               <p>{post.content}</p>
+              <div className="flex gap-2 mt-8">
+                {post.filePaths && post.filePaths.map((filePath, index) => (
+                  <img 
+                    src={filePath} 
+                    alt={`file-${index}`} 
+                    key={index} 
+                    className="h-[180px] w-[180px] object-cover rounded-md border border-gray-200" 
+                    onClick={() => window.open(filePath, '_blank')}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* 게시글 푸터 */}

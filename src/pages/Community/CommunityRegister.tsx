@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Select, message, Input, Button } from 'antd';
-import type { UploadFile, UploadProps } from 'antd';
 import { CommunityCategories } from '../../constants/posts';
 import ImageUpload from '../../components/board/QuestionForm/ImageUpload';
 import { communityService } from '../../services/community.service';
@@ -14,14 +13,6 @@ const { TextArea } = Input;
 const MAX_TITLE_LENGTH = 30;
 const MAX_CONTENT_LENGTH = 5000;
 
-const getBase64 = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (error) => reject(error);
-  });
-
 const CommunityRegister: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -32,17 +23,8 @@ const CommunityRegister: React.FC = () => {
     content: '',
 
   });
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
+  const [fileList, setFileList] = useState<File[]>([]);
   const { userId, userLocation } = useSelector((state: RootState) => state.auth);
-
-  useEffect(() => {
-    const storedFiles = localStorage.getItem('uploadedImages');
-    if (storedFiles) {
-      setFileList(JSON.parse(storedFiles));
-    }
-  }, []);
 
   const handleInputChange = useCallback((
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -51,32 +33,11 @@ const CommunityRegister: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   }, []);
 
-  const handlePreview = useCallback(async (file: UploadFile) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj as File);
-    }
-    setPreviewImage(file.url || (file.preview as string));
-    setPreviewOpen(true);
-  }, []);
+ 
 
-  const handleChange: UploadProps['onChange'] = useCallback(async ({ fileList: newFileList }: { fileList: UploadFile[] }) => {
-    if (newFileList.length > 5) {
-      message.error('최대 5개의 이미지만 업로드할 수 있습니다.');
-      return;
-    }
-
-    const updatedFileList = await Promise.all(
-      newFileList.map(async (file) => {
-        if (!file.url && !file.preview && file.originFileObj) {
-          file.preview = await getBase64(file.originFileObj);
-        }
-        return file;
-      })
-    );
-
-    setFileList(updatedFileList);
-    localStorage.setItem('uploadedImages', JSON.stringify(updatedFileList));
-  }, []);
+  const handleChange = (newFiles: File[]) => {
+    setFileList(newFiles);
+  };
 
   const handleRegister = useCallback(async () => {
     const { categoryName, title, content } = formData;
@@ -87,42 +48,34 @@ const CommunityRegister: React.FC = () => {
     }
 
     try {
-      const data = new FormData();
-
-      const question: CommunityRegisterDTO = {
+      const form = new FormData();
+      
+      const post: CommunityRegisterDTO = {
         title,
         customerId: Number(userId),
         categoryName,
         location: userLocation || '성동구',
         content
-      }
+      };
 
-      // fileList.forEach((file, index) => {
-      //   if (file.originFileObj) {
-      //     data.append(`images[${index}]`, file.originFileObj);
-      //   }
-      // });
-      // question JSON 데이터 추가 시 content-type 설정
-      const questionBlob = new Blob([JSON.stringify(question)], {
+      // post JSON 데이터 추가
+      form.append('question', new Blob([JSON.stringify(post)], {
         type: 'application/json'
-      });
-      console.log(questionBlob);
-      data.append('question', questionBlob);
+      }));
 
-      //파일 데이터 추가
-      fileList.forEach((file) => {
-        if (file.originFileObj) {
-          data.append('file', file.originFileObj);
-        }
+      // 파일 데이터 추가 - 백엔드의 MultipartFile List와 매칭
+      fileList.forEach(file => {
+        form.append('file', file);  // 'files'는 백엔드의 매개변수명과 일치해야 함
       });
 
-      await communityService.postCommunityPost(data);
+      await communityService.postCommunityPost(form);
       message.success('게시글이 등록되었습니다!');
       navigate('/community');
     } catch (error) {
-      message.error(`게시글 등록 실패: ${error}`);
+      console.error('Failed to create post:', error);
+      message.error('게시글 등록에 실패했습니다.');
     }
-  }, [formData, fileList, navigate]);
+  }, [formData, fileList, userId, userLocation, navigate]);
 
   return (
     <div className="w-full px-[25%] flex flex-col items-start">
@@ -180,11 +133,7 @@ const CommunityRegister: React.FC = () => {
         <div className="mb-6">
           <ImageUpload
             fileList={fileList}
-            onPreview={handlePreview}
             onChange={handleChange}
-            previewImage={previewImage}
-            previewOpen={previewOpen}
-            onPreviewClose={() => setPreviewImage('')}
           />
         </div>
       </div>

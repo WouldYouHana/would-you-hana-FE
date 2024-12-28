@@ -5,8 +5,6 @@ import { Divider, List, message, Skeleton } from 'antd';
 import { getAuthToken } from '../../hoc/request';
 import CommunityNotice from '../../components/board/CommunityNotice/CommunityNotice';
 import CommunityCategory from '../../components/board/Category/CommunityCategory';
-import ImgBank from '../../assets/img/img_community3.jpg';
-import ImgBank2 from '../../assets/img/img_community2.png';
 import IconPencil from '../../assets/img/icon_pencil.svg';
 import { communityService } from '../../services/community.service';
 import { CommunityListDTO } from '../../types/dto/community.dto';
@@ -106,7 +104,7 @@ const Community: React.FC = () => {
   }, []);
 
   const renderListItem = useCallback(
-    (item: CommunityListDTO, index: number) => (
+    (item: CommunityListDTO) => (
       <List.Item
         key={item.postId}
         className={`w-full h-auto p-0.5 m-0 relative border-b border-[rgba(140,140,140,0.35)]`}
@@ -116,43 +114,41 @@ const Community: React.FC = () => {
         }}
         onClick={() => handlePostClick(item.postId)}
       >
-        <div className='p-3 flex'>
-          <div className='flex flex-col w-4/5'>
-            <div className='flex flex-col text-start justify-start gap-2'>
+        <div className='py-3 px-5 flex'>
+            <div className='w-full flex flex-col text-start justify-start gap-2'>
               <p className='text-sm text-gray-500'>{item.categoryName}</p>
-              <h1 className='text-lg font-bold'>
-                {truncateText(item.title, 23)}
-              </h1>
-              <p>
-              {truncateText(item.content, 180)}
-              </p>
-              <div className='flex gap-3 mt-5'>
-                <p className='text-sm text-gray-500'>
-                  <span className='text-mainColor'>조회 {item.viewCount}</span>
-                  {' · '}좋아요 {item.likeCount}
-                  {' · '}스크랩 {item.scrapCount}
-                  {' · '}댓글 {item.commentCount}
-                  {' · '}{item.nickname}
-                </p>
+              <div className='flex justify-between'>
+                <div>
+                  <h1 className='text-lg font-bold'>{truncateText(item.title, 23)}</h1>
+                  <p>{truncateText(item.content, 180)}</p>
+                </div>
+                {item.filePaths.length > 0 && (
+                  <div className=''>
+                    <img
+                      src={item.filePaths[0]}
+                      className='w-20 h-20 object-cover rounded-md'
+                      alt='Post'
+                    />
+                  </div>
+                )}
               </div>
+
+              <div className='flex justify-between mt-3'>
+                  <p className='text-sm text-gray-500'>
+                    <span className='text-mainColor'>조회 {item.viewCount}</span>
+                    {' · '}좋아요 {item.likeCount}
+                    {' · '}스크랩 {item.scrapCount}
+                    {' · '}댓글 {item.commentCount}
+                    {' · '}{item.nickname}
+                  </p>
+                  <p className='text-sm text-gray-500 pr-5'>
+                    <span className='text-gray-500'>
+                      {relativeTime(+new Date(item.createdAt))}
+                    </span>
+                  </p>
+              </div>
+
             </div>
-          </div>
-          <div className='flex flex-col w-1/4 mt-7 justify-between'>
-            <div className='flex justify-center'>
-              <img
-                src={index % 2 === 0 ? ImgBank : ImgBank2}
-                className='w-20 h-20 object-cover'
-                alt='Post'
-              />
-            </div>
-            <div className='flex justify-center align-center'>
-            <p className='w-20 mt-5 text-sm text-gray-500  flex justify-end align-end'>
-                <span className='text-gray-500'>
-                  {relativeTime(+new Date(item.createdAt))}
-                </span>
-              </p>
-            </div>
-          </div>
         </div>
       </List.Item>
     ),
@@ -166,7 +162,7 @@ const Community: React.FC = () => {
         next={loadMoreData}
         hasMore={hasMore}
         loader={<Skeleton avatar paragraph={{ rows: 1 }} active />}
-        endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
+        endMessage={<Divider plain>더 이상 게시물이 없습니다.</Divider>}
         scrollableTarget='scrollableDiv'
         className='w-full px-[15%]'
       >
