@@ -13,7 +13,22 @@ export const userService = {
       data,
     });
   },
-
+  // 이메일 인증
+  sendVerificationCode: (email: string) => {
+    return request<string>({
+      method: 'POST',
+      url: `${BASE_URL}/members/send-verification-code`,
+      params: email ? { email } : {}
+    });
+  },
+  // 이메일 인증 코드 검증
+  verifyEmail: (email: string, code: string) => {
+    return request<string>({
+      method: 'POST',
+      url: `${BASE_URL}/members/verify-email`,
+      params: email && code ? { email, code } : {}
+    });
+  },
   // 일반회원 관심지역 받아오기
   getInterestLocationList: (customer_id: number) => {
     return request<string[]>({
