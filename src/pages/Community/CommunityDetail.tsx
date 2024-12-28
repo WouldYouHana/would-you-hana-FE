@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, message } from 'antd';
-import {StarOutlined, StarFilled, LikeOutlined, MessageOutlined, DeleteOutlined} from '@ant-design/icons';
+import {StarOutlined, StarFilled, LikeOutlined, LikeFilled, MessageOutlined, DeleteOutlined} from '@ant-design/icons';
 import { relativeTime } from '../../utils/stringFormat';
 import Comments from '../../components/board/QuestionDetail/Comments/Comments';
 import { useSelector } from 'react-redux';
@@ -144,8 +144,8 @@ const CommunityDetail: React.FC = () => {
             {/* 게시글 푸터 */}
             <div className="text-gray-400" style={{fontSize: '13px'}}>
               <span>{relativeTime(+new Date(post.createdAt))}</span>
-              <span className="ml-4" onClick={handleLikeClick}>
-                <LikeOutlined/> {likeCount}
+              <span className="ml-4 cursor-pointer hover:text-gray-500" onClick={handleLikeClick}>
+                {!liked ? <LikeFilled /> : <LikeOutlined />} {likeCount}
               </span>
               <span className="ml-4">
                 <MessageOutlined/> {post.commentList.length}
