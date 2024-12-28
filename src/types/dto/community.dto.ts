@@ -12,6 +12,7 @@ export interface CommunityListDTO{
     likeCount : number;
     scrapCount : number;
     viewCount : number;
+    filePaths : string[];
 }
 
 export interface CommunityResponseDTO{
@@ -28,6 +29,7 @@ export interface CommunityResponseDTO{
     scrapCount : number;
     viewCount : number;
     commentList : CommentDTO[];
+    filePaths : string[];
 }
 
 export interface CommunityAllResponseDTO {
