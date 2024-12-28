@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { Banker } from "../../constants/users";
-import { findBanker } from '../../utils/userStorage';
 import { Form, Input, Button, message, Select, Space } from 'antd';
 import { RuleObject } from 'antd/es/form';
 import {
@@ -16,6 +15,7 @@ import { Categories } from '../../constants/posts';
 import '../../styles/formInput.css';
 import wyhn from '../../assets/img/would_you_hana.png';
 import { bankerService } from '../../services/banker.service'; 
+import { AxiosResponse } from 'axios';
 
 
 interface formProps {
@@ -33,6 +33,10 @@ const InputForm: React.FC<{
   setCompleteInputForm: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ setBanker, setCompleteInputForm }) => {
   const [sendAuthNum, setSendAuthNum] = useState<boolean>(false);
+  const [verified, setVerified] = useState<boolean>(false);
+  const [sendAuthNumMessage, setSendAuthNumMessage] = useState<string>(''); 
+  const [verifyMessage, setVerifyMessage] = useState<string>('');
+
 
   const validatePassword = (_: RuleObject, value: string): Promise<void> => {
     const passwordPattern = /^(?=.*[a-z])(?=.*\d)(?=.*[!@#^&*]).{8,}$/;
@@ -57,16 +61,55 @@ const InputForm: React.FC<{
     return Promise.resolve();
   };
 
-  const handleAuthNum = () => {
-    if (findBanker(form.getFieldValue('email'))) {
-      message.warning('이미 존재하는 이메일입니다.');
-      return;
+  const handleAuthNum = async () => {
+
+    const email = form.getFieldValue('email')
+
+    // if (findBanker(form.getFieldValue('email'))) {
+    //   message.warning('이미 존재하는 이메일입니다.');
+    //   return;
+    // }
+
+    try {
+      setSendAuthNumMessage('이메일 전송중입니다..');
+      const response: AxiosResponse<string> = await bankerService.sendVerificationCode(email);
+
+      if (response && response.data) {
+        setSendAuthNum(true);
+        setSendAuthNumMessage('이메일 발송에 성공했습니다.'); // 성공 메시지 설정
+      } else {
+        setSendAuthNumMessage('이메일 발송에 실패했습니다.'); // 실패 메시지 설정
+      }
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setSendAuthNumMessage('이메일 발송에 실패했습니다.');
     }
-    // Implement your auth number logic here
-    setSendAuthNum(true);
+  };
+
+  const handleVerifyAuthNum = async () => {
+    const email = form.getFieldValue('email');
+    const authNum = form.getFieldValue('authNum');
+
+    try {
+      const response: AxiosResponse<string> = await bankerService.verifyEmail(email, authNum);
+      if (response && response.data === '이메일 인증이 완료되었습니다.') {
+        setVerified(true);
+        setVerifyMessage('인증에 성공했습니다.'); // 성공 메시지 설정
+      } else {
+        setVerified(false);
+        setVerifyMessage('인증에 실패했습니다.'); // 실패 메시지 설정
+      }
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setVerifyMessage('인증에 실패했습니다.');
+    }
   };
 
   const handleRegister = (values: formProps) => {
+    if(!verified){
+      message.error("이메일 인증이 필요합니다.")
+      return;
+    }
     // values 중 authNum과 passwordConfirm은 저장 안함
     const { authNum, passwordConfirm, ...rest } = values;
     // void를 이용해 명시적으로 무시
@@ -119,11 +162,18 @@ const InputForm: React.FC<{
           },
         ]}
       >
-        <div className="flex gap-2">
-          <Input prefix={<MailOutlined />} placeholder="이메일" />
-          <Button color="default" variant="filled" onClick={handleAuthNum}>
-            인증번호 발송
-          </Button>
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <Input prefix={<MailOutlined />} placeholder="이메일" />
+            <Button color="default" variant="filled" onClick={handleAuthNum}>
+              인증번호 발송
+            </Button>
+          </div>
+          {sendAuthNumMessage && (
+            <p className={`text-sm ${sendAuthNum ? 'text-blue-500' : 'text-red-500'}`}>
+              {sendAuthNumMessage}
+            </p>
+          )}
         </div>
       </Form.Item>
 
@@ -132,11 +182,23 @@ const InputForm: React.FC<{
         name="authNum"
         rules={[{ required: true, message: '인증번호를 입력해주세요.' }]}
       >
-        <Input
-          prefix={<MailOutlined />}
-          disabled={!sendAuthNum}
-          placeholder="인증번호"
-        />
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <Input
+              prefix={<MailOutlined />}
+              disabled={!sendAuthNum}
+              placeholder="인증번호"
+            />
+            <Button color="default" variant="filled" onClick={handleVerifyAuthNum}>
+              인증 확인
+            </Button>
+          </div>
+          {verifyMessage && (
+            <p className={`text-sm ${verified ? 'text-blue-500' : 'text-red-500'}`}>
+              {verifyMessage}
+            </p>
+          )}
+        </div>
       </Form.Item>
 
       <Form.Item

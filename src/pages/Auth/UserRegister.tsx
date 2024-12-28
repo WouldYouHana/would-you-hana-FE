@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { User } from "../../constants/users";
-import { findUser, hasNickname } from '../../utils/userStorage';
+import { hasNickname } from '../../utils/userStorage';
 import { RuleObject } from 'antd/es/form';
 import { Form, Input, Button, message, Select, Radio, Space } from 'antd';
 import {
@@ -17,6 +17,7 @@ import { Categories } from '../../constants/posts';
 import '../../styles/formInput.css';
 import wyhn from '../../assets/img/would_you_hana.png';
 import { userService } from '../../services/user.service';
+import { AxiosResponse } from 'axios';
 
 // 회원가입 폼 입력할 때의 데이터 타입
 interface formProps {
@@ -40,6 +41,9 @@ const InputForm: React.FC<{
   const [nicknameDuplicate, setNicknameDuplicate] = useState<boolean>(false);
   const [nicknameError, setNicknameError] = useState<boolean>(false);
   const [sendAuthNum, setSendAuthNum] = useState<boolean>(false);
+  const [verified, setVerified] = useState<boolean>(false);
+  const [sendAuthNumMessage, setSendAuthNumMessage] = useState<string>(''); 
+  const [verifyMessage, setVerifyMessage] = useState<string>('');
 
   const validatePhone = (_: RuleObject, value: string): Promise<void> => {
     const phonePattern = /^(01[0-9]{1,3})-([0-9]{3,4})-([0-9]{4})$/;
@@ -115,16 +119,53 @@ const InputForm: React.FC<{
     return Promise.resolve();
   };
 
-  const handleAuthNum = () => {
-    if (findUser(form.getFieldValue('email'))) {
-      message.warning('이미 존재하는 이메일입니다.');
-      return;
+  const handleAuthNum = async () => {
+    // if (findUser(form.getFieldValue('email'))) {
+    //   message.warning('이미 존재하는 이메일입니다.');
+    //   return;
+    // }
+    const email = form.getFieldValue('email');
+    try {
+      setSendAuthNumMessage('이메일 전송중입니다..');
+      const response: AxiosResponse<string> = await userService.sendVerificationCode(email);
+
+      if (response && response.data) {
+        setSendAuthNum(true);
+        setSendAuthNumMessage('이메일 발송에 성공했습니다.'); // 성공 메시지 설정
+      } else {
+        setSendAuthNumMessage('이메일 발송에 실패했습니다.'); // 실패 메시지 설정
+      }
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setSendAuthNumMessage('이메일 발송에 실패했습니다.');
     }
-    // Implement your auth number logic here
-    setSendAuthNum(true);
   };
 
+  const handleVerifyAuthNum = async () => {
+    const email = form.getFieldValue('email');
+    const authNum = form.getFieldValue('authNum');
+
+    try {
+      const response: AxiosResponse<string> = await userService.verifyEmail(email, authNum);
+      if (response && response.data === '이메일 인증이 완료되었습니다.') {
+        setVerified(true);
+        setVerifyMessage('인증에 성공했습니다.'); // 성공 메시지 설정
+      } else {
+        setVerified(false);
+        setVerifyMessage('인증에 실패했습니다.'); // 실패 메시지 설정
+      }
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setVerifyMessage('인증에 실패했습니다.');
+    }
+  };
+  
+
   const handleRegister = (values: formProps) => {
+    if(!verified){
+      message.error("이메일 인증이 필요합니다.")
+      return;
+    }
     // values 중 authNum과 passwordConfirm은 저장 안함
     const { authNum, passwordConfirm, ...rest } = values;
     // void를 이용해 명시적으로 무시
@@ -213,11 +254,18 @@ const InputForm: React.FC<{
           },
         ]}
       >
-        <div className="flex gap-2">
-          <Input prefix={<MailOutlined />} placeholder="이메일" />
-          <Button color="default" variant="filled" onClick={handleAuthNum}>
-            인증번호 발송
-          </Button>
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <Input prefix={<MailOutlined />} placeholder="이메일" />
+            <Button color="default" variant="filled" onClick={handleAuthNum}>
+              인증번호 발송
+            </Button>
+          </div>
+          {sendAuthNumMessage && (
+            <p className={`text-sm ${sendAuthNum ? 'text-blue-500' : 'text-red-500'}`}>
+              {sendAuthNumMessage}
+            </p>
+          )}
         </div>
       </Form.Item>
 
@@ -226,11 +274,23 @@ const InputForm: React.FC<{
         name="authNum"
         rules={[{ required: true, message: '인증번호를 입력해주세요.' }]}
       >
-        <Input
-          prefix={<MailOutlined />}
-          disabled={!sendAuthNum}
-          placeholder="인증번호"
-        />
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <Input
+              prefix={<MailOutlined />}
+              disabled={!sendAuthNum}
+              placeholder="인증번호"
+            />
+            <Button color="default" variant="filled" onClick={handleVerifyAuthNum}>
+              인증 확인
+            </Button>
+          </div>
+          {verifyMessage && (
+            <p className={`text-sm ${verified ? 'text-blue-500' : 'text-red-500'}`}>
+              {verifyMessage}
+            </p>
+          )}
+        </div>
       </Form.Item>
 
       <Form.Item
