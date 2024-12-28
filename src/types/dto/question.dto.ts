@@ -54,6 +54,7 @@ export interface QuestionResponseDTO {
     likeCount: number;
     scrapCount: number;
     viewCount: number;
+    filePaths: string[];
     answer: AnswerResponseDTO;
     commentList: CommentDTO[];
 }
