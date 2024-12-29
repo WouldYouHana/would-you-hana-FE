@@ -145,7 +145,7 @@ const CommunityDetail: React.FC = () => {
             <div className="text-gray-400" style={{fontSize: '13px'}}>
               <span>{relativeTime(+new Date(post.createdAt))}</span>
               <span className="ml-4 cursor-pointer hover:text-gray-500" onClick={handleLikeClick}>
-                {!liked ? <LikeFilled /> : <LikeOutlined />} {likeCount}
+                {liked ? <LikeFilled /> : <LikeOutlined />} {likeCount}
               </span>
               <span className="ml-4">
                 <MessageOutlined/> {post.commentList.length}
