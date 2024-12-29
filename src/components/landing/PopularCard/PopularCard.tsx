@@ -31,13 +31,20 @@ const PopularCard: React.FC<PopularCardProps> = ({ title, contents }) => {
   return (
     <Card
       title={<span className="font-bold">{title}</span>}
-      className="text-center"
+      className="text-center min-h-[450px]"
     >
       <ul className='divide-y divide-gray-100'>
       {contents.map((content, index) => (
         <CardContent key={index} {...content} />
       ))}
       </ul>
+      {contents.length < 3 && (
+        <div className="flex items-center justify-center bg-gray-50 rounded-lg p-5 mb-3">
+          <p className=" text-lg">
+          📝 새로운 글을 작성해보세요!
+          </p>
+        </div>
+      )}
      
     </Card>
   );

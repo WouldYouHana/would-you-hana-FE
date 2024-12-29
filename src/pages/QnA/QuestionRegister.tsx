@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Select, message, Input, Button } from 'antd';
-import type { UploadFile, UploadProps } from 'antd';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../hoc/store';
 import { QuestionAddRequestDTO } from '../../types/dto/question.dto';
@@ -15,14 +14,6 @@ const { TextArea } = Input;
 
 const MAX_TITLE_LENGTH = 30;
 const MAX_CONTENT_LENGTH = 5000;
-
-const getBase64 = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (error) => reject(error);
-  });
 
 const QuestionRegister: React.FC = () => {
   const navigate = useNavigate();
