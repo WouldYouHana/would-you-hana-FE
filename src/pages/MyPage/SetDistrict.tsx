@@ -144,6 +144,7 @@ const SetDistrict: React.FC = () => {
         if (remainingLocations.length > 0) {
           dispatch(updateLocationWithApi(remainingLocations[0]));
           message.info(`현재 지역이 ${remainingLocations[0]}로 변경되었습니다.`);
+          localStorage.setItem('userLocation', remainingLocations[0]);
         }
       }
 
@@ -157,6 +158,7 @@ const SetDistrict: React.FC = () => {
   const handleSelectLocation = useCallback((location: string) => {
     dispatch(updateLocationWithApi(location));
     message.success(`${location}이(가) 현재 지역으로 설정되었습니다.`);
+    localStorage.setItem('userLocation', location);
   }, [dispatch]);
 
 
