@@ -66,6 +66,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ placeholder, style, value, on
   // 지역 선택 시 페이지 이동
   const handleChange = useCallback((selectedDistrict: string) => {
     onChange(selectedDistrict);
+    localStorage.setItem('userLocation', selectedDistrict);
     dispatch(updateLocationWithApi(selectedDistrict));
     navigate(`/district/${selectedDistrict}`);
   }, [navigate, onChange, dispatch]);
